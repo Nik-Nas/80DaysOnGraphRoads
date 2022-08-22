@@ -53,9 +53,11 @@
     <Compile Include="Code\Drawing\VisualizedGraph.cs" />
     <Compile Include="Code\GameObjects\Component.cs" />
     <Compile Include="Code\GameObjects\GameObject.cs" />
+    <Compile Include="Code\Utils\Triplet.cs" />
     <Compile Include="Code\WorldMath\AdvancedMath.cs" />
     <Compile Include="Code\WorldMath\GraphScripts\Graph.cs" />
     <Compile Include="Code\WorldMath\GraphScripts\Node.cs" />
+    <Compile Include="Code\WorldMath\GraphScripts\WeightedGraph.cs" />
     <Compile Include="Code\WorldMath\Transform.cs" />
     <Compile Include="Code\WorldMath\Vector2.cs" />
     <Compile Include="Code\Несбывшиеся мечты\Controls\EventSystem\ActionMap.cs" />
@@ -104,8 +106,6 @@
   <ItemGroup>
     <Content Include="Resources\car-icon-512x256.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Code\Несбывшиеся мечты" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
