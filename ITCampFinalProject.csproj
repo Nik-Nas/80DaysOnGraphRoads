@@ -55,9 +55,12 @@
     <Compile Include="Code\GameObjects\GameObject.cs" />
     <Compile Include="Code\Utils\Triplet.cs" />
     <Compile Include="Code\WorldMath\AdvancedMath.cs" />
-    <Compile Include="Code\WorldMath\GraphScripts\Graph.cs" />
+    <Compile Include="Code\WorldMath\GraphScripts\GraphGenerator.cs" />
+    <Compile Include="Code\WorldMath\GraphScripts\RoadManager.cs" />
+    <Compile Include="Code\WorldMath\GraphScripts\WeightedOrientedGraph.cs" />
     <Compile Include="Code\WorldMath\GraphScripts\Node.cs" />
-    <Compile Include="Code\WorldMath\GraphScripts\WeightedGraph.cs" />
+    <Compile Include="Code\WorldMath\GraphScripts\ShortestPathFinder.cs" />
+    <Compile Include="Code\WorldMath\GraphScripts\WeightedAndOrientedGraph.cs" />
     <Compile Include="Code\WorldMath\Transform.cs" />
     <Compile Include="Code\WorldMath\Vector2.cs" />
     <Compile Include="Code\Несбывшиеся мечты\Controls\EventSystem\ActionMap.cs" />

@@ -30,7 +30,7 @@ namespace ITCampFinalProject.Code.WorldMath
 
         public static float Angle(Vector2 v1, Vector2 v2)
         {
-            return (float) Math.Acos(Dot(v1, v2 - v1));
+            return (float) (Math.Acos(Dot(v1, v2 - v1)) * 180D / Math.PI);
         }
 
         public static float Dot(Vector2 v1, Vector2 v2)

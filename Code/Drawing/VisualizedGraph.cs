@@ -8,7 +8,7 @@ namespace ITCampFinalProject.Code.Drawing
     {
         public static Bitmap VisualizeGraph(Vector2[] source, float scaleFactor)
         {
-            float radiusOfNode = 5 * scaleFactor;
+            float radiusOfNode = 3.5f * scaleFactor;
             float halfRadius = radiusOfNode / 2f;
             //creating empty Bitmap to draw on it
             Bitmap resultingImage = new Bitmap(

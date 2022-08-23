@@ -39,6 +39,22 @@ namespace ITCampFinalProject.Code.WorldMath
             return tmp * tmp * x;
         }
         
+        public static float Pow(float x, float y)
+        {
+            if (y == 0) return 1;
+            float tmp = Pow(x, y / 2) % 2;
+            if (y % 2 == 0) return tmp * tmp;
+            return tmp * tmp * x;
+        }
+        
+        public static double Pow(double x, double y)
+        {
+            if (y == 0) return 1;
+            double tmp = Pow(x, y / 2) % 2;
+            if (y % 2 == 0) return tmp * tmp;
+            return tmp * tmp * x;
+        }
+        
         
         public static BigInteger Pow(BigInteger x, BigInteger y)
         {
@@ -46,6 +62,14 @@ namespace ITCampFinalProject.Code.WorldMath
             BigInteger tmp = Pow(x, y / 2) % 2;
             if (y % 2 == 0) return tmp * tmp;
             return tmp * tmp * x;
+        }
+        
+        public static float NextFloat(Random random)
+        {
+            double mantissa = random.NextDouble() * 2.0 - 1.0;
+            // choose -149 instead of -126 to also generate subnormal floats (*)
+            double exponent = AdvancedMath.Pow(2.0f, random.Next(-126, 128));
+            return (float) (mantissa * exponent);
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ITCampFinalProject.Code.Utils
 {
-    class Triplet<AValue, BValue, CValue>
+    public class Triplet<AValue, BValue, CValue>
     {
         public readonly AValue aValue;
         public readonly BValue bValue;
