@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace ITCampFinalProject.Code.Utils
 {
-    public class Triplet<AValue, BValue, CValue>
+    public class Triplet<TKey, TValue, TArgument>
     {
-        public readonly AValue aValue;
-        public readonly BValue bValue;
-        public readonly CValue cValue;
-        public Triplet(AValue a, BValue b, CValue c)
+        public readonly TKey Key;
+        public readonly TValue Value;
+        public readonly TArgument Argument;
+        public Triplet(TKey key, TValue value, TArgument argument)
         {
-            aValue = a;
-            bValue = b;
-            cValue = c;
+            Key = key;
+            Value = value;
+            Argument = argument;
         }
     }
 }

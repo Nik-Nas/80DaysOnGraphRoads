@@ -23,7 +23,7 @@ namespace ITCampFinalProject
             _renderer.SetScreenGraphics(CreateGraphics());
             _player = new Sprite(Properties.Resources.car_icon_512x256, new Size(64, 32), 1, 50, 50);
             _renderer.AddSpriteToRenderingStack(_player);
-            Bitmap visualizedGraph = VisualizedGraph.VisualizeGraph(
+            /*Bitmap visualizedGraph = VisualizedGraph.VisualizeGraph(
                 new[]
                 {
                     new Vector2(15, 15),
@@ -31,7 +31,7 @@ namespace ITCampFinalProject
                     new Vector2(30, 40)
                 }, 2f);
             _renderer.AddSpriteToRenderingStack(new Sprite(visualizedGraph, 
-                visualizedGraph.Size, new Vector2(150, 200), 1));
+                visualizedGraph.Size, new Vector2(150, 200), 1));*/
             FPSTimer.Enabled = true;
             InputTimer.Enabled = false;
         }
