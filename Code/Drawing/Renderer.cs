@@ -2,14 +2,16 @@
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
+using ITCampFinalProject.Code.WorldMath;
 
 namespace ITCampFinalProject.Code.Drawing
 {
-    class Renderer
+    public class Renderer
     {
         public ReadOnlyCollection<List<Sprite>> RenderingStack => _renderingStack.Values.ToList().AsReadOnly();
         public byte RenderingMask;
-        private readonly Dictionary<int, List<Sprite>> _renderingStack;
+        private Dictionary<RenderingLayer, List<Sprite>> _renderingStack;
+        public List<Line> primitives;
         private Bitmap _buffer;
         private Graphics _bufferGraphics;
         private Graphics _screenGraphics;
@@ -17,19 +19,27 @@ namespace ITCampFinalProject.Code.Drawing
         public Renderer(Graphics targetScreenGraphics, Size screenSize)
         {
             _screenGraphics = targetScreenGraphics;
-            _renderingStack = new Dictionary<int, List<Sprite>>();
+            primitives = new List<Line>();
+            _renderingStack = new Dictionary<RenderingLayer, List<Sprite>>();
+            for (int i = 1; i < 256; i *= 2)
+            {
+                _renderingStack.Add((RenderingLayer) i, new List<Sprite>());
+            }
             _buffer = new Bitmap(screenSize.Width, screenSize.Height);
             _bufferGraphics = Graphics.FromImage(_buffer);
         }
-        //00000011
-        //00000010
 
         public void RenderStack()
         {
             _bufferGraphics.Clear(Color.White);
-            foreach (Sprite sprite in _renderingStack.Where(layeredSprite =>
-                         ((byte)(layeredSprite.Key & RenderingMask)) != 0)
-                         .SelectMany(layeredSprite => layeredSprite.Value))
+            foreach (Line line in primitives)
+            {
+                _bufferGraphics.DrawLine(line.pen, (int) line.start.transform.position.x, (int) line.start.transform.position.y, 
+                    (int) line.end.transform.position.x, (int) line.end.transform.position.y);
+            }
+            foreach(Sprite sprite in _renderingStack.Where(layer => 
+                            (byte) ((byte) layer.Key & RenderingMask) != 0).
+                        SelectMany(layer => layer.Value))
             {
                 _bufferGraphics.DrawImage(sprite.rotatedTexture,
                     sprite.transform.centeredPosition.x,
@@ -38,7 +48,7 @@ namespace ITCampFinalProject.Code.Drawing
 
             _screenGraphics.DrawImage(_buffer, 0, 0);
         }
-
+        
         public void ResizeRenderingWindow(int newWidth, int newHeight)
         {
             _buffer.Dispose();
@@ -49,26 +59,30 @@ namespace ITCampFinalProject.Code.Drawing
 
         public void AddSpriteToRenderingStack(Sprite sprite)
         {
-            if (_renderingStack.ContainsKey(sprite.layer))
-            {
+            if (_renderingStack[sprite.layer].Count == 0) EnableLayer(sprite.layer);
                 _renderingStack[sprite.layer].Add(sprite);
-            }
-            else
-            {
-                _renderingStack.Add(sprite.layer, new List<Sprite>(new[] {sprite}));
-                RenderingMask |= sprite.layer;
-            }
-            //_renderingStack.Add(sprite);
         }
 
         public bool RemoveSpriteFromRenderingStack(Sprite sprite)
         {
-            //return _renderingStack.Remove(sprite);
-            if (!_renderingStack.TryGetValue(sprite.layer, out List<Sprite> sprites)) return false;
-            if (!sprites.Remove(sprite)) return false;
-            RenderingMask ^= sprite.layer;
+            if (_renderingStack[sprite.layer].Count == 0) return false;
+            if (!_renderingStack[sprite.layer].Remove(sprite)) return false;
+            if (_renderingStack[sprite.layer].Count == 0) DisableLayer(sprite.layer);
             return true;
+        }
 
+        public void EnableLayer(RenderingLayer layer)
+        {
+            byte layerValue = (byte) layer;
+            if ((byte) (RenderingMask & layerValue) == 0)
+            {
+                RenderingMask |= layerValue;
+            }
+        }
+
+        public void DisableLayer(RenderingLayer layer)
+        {
+            RenderingMask ^= (byte) layer;
         }
 
         public void SetScreenGraphics(Graphics graphics)
@@ -76,5 +90,17 @@ namespace ITCampFinalProject.Code.Drawing
             _screenGraphics.Dispose();
             _screenGraphics = graphics;
         }
+    }
+
+    public enum RenderingLayer
+    {
+        Layer1 = 0b00000001,
+        Layer2 = 0b00000010,
+        Layer3 = 0b00000100,
+        Layer4 = 0b00001000,
+        Layer5 = 0b00010000,
+        Layer6 = 0b00100000,
+        Layer7 = 0b01000000,
+        Layer8 = 0b10000000
     }
 }

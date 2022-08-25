@@ -8,6 +8,8 @@ namespace ITCampFinalProject.Code.WorldMath
     {
         public Vector2 position;
         public Vector2 center { get; private set; }
+
+        public Size Size => _size;
         public Vector2 centeredPosition => _centeredPosition;
         private Vector2 _centeredPosition;
         private Size _size;
@@ -37,6 +39,7 @@ namespace ITCampFinalProject.Code.WorldMath
         public void ChangePosition(Vector2 newPosition)
         {
             position = newPosition;
+            RecalculateCenteredPosition();
         }
 
         public void ChangePosition(float x, float y)

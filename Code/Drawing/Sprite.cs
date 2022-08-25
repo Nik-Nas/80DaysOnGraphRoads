@@ -11,7 +11,7 @@ namespace ITCampFinalProject.Code.Drawing
         public readonly Bitmap texture;
         public Bitmap rotatedTexture;
         public Transform transform;
-        public readonly byte layer;
+        public readonly RenderingLayer layer;
         
         private void OnSizeChanged(int width, int height)
         {
@@ -27,7 +27,7 @@ namespace ITCampFinalProject.Code.Drawing
 
         #region Constructors
 
-        public Sprite(Bitmap texture, Size size, Vector2 position, byte layer, float angle = 0)
+        public Sprite(Bitmap texture, Size size, Vector2 position, RenderingLayer layer, float angle = 0)
         {
             this.texture = DrawingUtils.ResizeImage(texture, size.Width, size.Height);
             rotatedTexture = Math.Abs(angle) > 0.01 ? DrawingUtils.RotateImage(this.texture, angle) : this.texture;
@@ -37,10 +37,10 @@ namespace ITCampFinalProject.Code.Drawing
             transform.OnTransformSizeChangedCallback += OnSizeChanged;
             transform.OnTransformRotatedCallback += OnRotated;
             //assigning layer to get ability use render mask
-            this.layer = layer >= 1 ? layer : (byte) 1;
+            this.layer = layer;
         }
 
-        public Sprite(Bitmap texture, Size size, byte layer, float x = 0, float y = 0, float angle = 0)
+        public Sprite(Bitmap texture, Size size, RenderingLayer layer, float x = 0, float y = 0, float angle = 0)
         {
             //creating texture with given configuration
             this.texture = DrawingUtils.ResizeImage(texture, size.Width, size.Height);
@@ -51,7 +51,7 @@ namespace ITCampFinalProject.Code.Drawing
             transform.OnTransformSizeChangedCallback += OnSizeChanged;
             transform.OnTransformRotatedCallback += OnRotated;
             //assigning layer to get ability use render mask
-            this.layer = layer >= 1 ? layer : (byte) 1;
+            this.layer = layer;
         }
         
         #endregion
