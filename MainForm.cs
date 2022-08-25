@@ -5,6 +5,7 @@ using System.Timers;
 using System.Windows.Forms;
 using ITCampFinalProject.Code.Drawing;
 using ITCampFinalProject.Code.WorldMath;
+using ITCampFinalProject.Code.WorldMath.GraphScripts;
 
 namespace ITCampFinalProject
 {
@@ -20,9 +21,13 @@ namespace ITCampFinalProject
             _renderer = new Renderer(CreateGraphics(), Size);
             InitializeComponent();
             _renderer.ResizeRenderingWindow(Size.Width, Size.Height);
-            _renderer.SetScreenGraphics(CreateGraphics());
-            _player = new Sprite(Properties.Resources.car_icon_512x256, new Size(64, 32), 1, 50, 50);
+            _player = new Sprite(Properties.Resources.car_icon_512x256, new Size(32, 16), 1, 50, 50);
             _renderer.AddSpriteToRenderingStack(_player);
+            RoadManager roadGenerator = new RoadManager();
+            Bitmap road = roadGenerator.GetRoad(Size);
+            _renderer.AddSpriteToRenderingStack(new Sprite(road, Size, Vector2.zero, 2, 0));
+            _renderer.SetScreenGraphics(CreateGraphics());
+
             /*Bitmap visualizedGraph = VisualizedGraph.VisualizeGraph(
                 new[]
                 {
@@ -32,6 +37,7 @@ namespace ITCampFinalProject
                 }, 2f);
             _renderer.AddSpriteToRenderingStack(new Sprite(visualizedGraph, 
                 visualizedGraph.Size, new Vector2(150, 200), 1));*/
+            Console.WriteLine(_renderer.RenderingMask);
             FPSTimer.Enabled = true;
             InputTimer.Enabled = false;
         }

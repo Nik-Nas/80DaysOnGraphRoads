@@ -68,7 +68,7 @@ namespace ITCampFinalProject.Code.WorldMath
         {
             double mantissa = random.NextDouble() * 2.0 - 1.0;
             // choose -149 instead of -126 to also generate subnormal floats (*)
-            double exponent = AdvancedMath.Pow(2.0f, random.Next(-126, 128));
+            double exponent = Math.Pow(2.0f, random.Next(-126, 128));
             return (float) (mantissa * exponent);
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using ITCampFinalProject.Code.Utils;
@@ -8,14 +9,14 @@ namespace ITCampFinalProject.Code.Drawing
 {
     public class VisualizedGraph
     {
-        public static Bitmap VisualizeGraph(KeyValuePair<List<Vector2>, Triplet<int, int, int>[]> source, float scaleFactor)
+        private static Random _random = new Random();
+
+        public static Bitmap VisualizeGraph(Triplet<int, int, int>[] source, float scaleFactor, Size screenSize)
         {
             float radiusOfNode = 3.5f * scaleFactor;
             float halfRadius = radiusOfNode / 2f;
             //creating empty Bitmap to draw on it
-            Bitmap resultingImage = new Bitmap(
-                (int) ((source.Key.Max().x + radiusOfNode * scaleFactor) * scaleFactor),
-                (int) ((source.Key.Max().y + radiusOfNode * scaleFactor) * scaleFactor));
+            Bitmap resultingImage = new Bitmap((int) (screenSize.Width * scaleFactor), (int) (screenSize.Height * scaleFactor));
             
             //create graphics for this bitmap
             Graphics resultingImageGraphics = Graphics.FromImage(resultingImage);
@@ -23,14 +24,13 @@ namespace ITCampFinalProject.Code.Drawing
                 //create custom pen to draw thick lines
                 Pen customPen = new Pen(Color.Orange, 3 * scaleFactor);
                 //float x, y, prevX, prevY;
-                foreach (Triplet<int, int, int> node in source.Value)
+                foreach (Triplet<int, int, int> node in source)
                 {
-                    resultingImageGraphics.DrawLine(customPen, source.Key[node.Key].x, source.Key[node.Key].y,
-                        source.Key[node.Value].x, source.Key[node.Value].y);
+                    Point p1 = new Point(_random.Next(30, 30 * (node.Key + 1)), _random.Next(30, 30 * (node.Key + 1)));
+                    Point p2 = new Point(_random.Next(30, 30 * (node.Value + 1)), _random.Next(30, 30 * (node.Value + 1)));
+                    resultingImageGraphics.DrawLine(customPen, p1, p2);
 
-                    resultingImageGraphics.FillEllipse(
-                        Brushes.Black, source.Key[node.Key].x - halfRadius, source.Key[node.Key].x - halfRadius,
-                        radiusOfNode, radiusOfNode);
+                    resultingImageGraphics.FillEllipse(Brushes.Black, p1.X - halfRadius, p1.Y - halfRadius, radiusOfNode, radiusOfNode);
                     
                 }
                 /*for (int i = 1; i < source.Key.Length; i++)

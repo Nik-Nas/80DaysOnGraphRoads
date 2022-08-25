@@ -21,12 +21,14 @@ namespace ITCampFinalProject.Code.Drawing
             _buffer = new Bitmap(screenSize.Width, screenSize.Height);
             _bufferGraphics = Graphics.FromImage(_buffer);
         }
+        //00000011
+        //00000010
 
         public void RenderStack()
         {
             _bufferGraphics.Clear(Color.White);
             foreach (Sprite sprite in _renderingStack.Where(layeredSprite =>
-                         (layeredSprite.Key & RenderingMask) != 0)
+                         ((byte)(layeredSprite.Key & RenderingMask)) != 0)
                          .SelectMany(layeredSprite => layeredSprite.Value))
             {
                 _bufferGraphics.DrawImage(sprite.rotatedTexture,
@@ -47,9 +49,9 @@ namespace ITCampFinalProject.Code.Drawing
 
         public void AddSpriteToRenderingStack(Sprite sprite)
         {
-            if (_renderingStack.ContainsKey(sprite.layer) && _renderingStack.TryGetValue(sprite.layer, out List<Sprite> sprites))
+            if (_renderingStack.ContainsKey(sprite.layer))
             {
-                sprites.Add(sprite);
+                _renderingStack[sprite.layer].Add(sprite);
             }
             else
             {
@@ -71,6 +73,7 @@ namespace ITCampFinalProject.Code.Drawing
 
         public void SetScreenGraphics(Graphics graphics)
         {
+            _screenGraphics.Dispose();
             _screenGraphics = graphics;
         }
     }

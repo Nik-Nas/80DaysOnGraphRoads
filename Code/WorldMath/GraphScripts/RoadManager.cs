@@ -12,20 +12,24 @@ namespace ITCampFinalProject.Code.WorldMath.GraphScripts
 
         public RoadManager()
         {
-            GraphGenerator.MAX_DistanceBetweenNodes = 30;
+            GraphGenerator.MAX_DistanceBetweenNodes = 100;
         }
 
-        public Bitmap GetRoad()
+        public Bitmap GetRoad(Size screenSize)
         {
             //updating random
             _random = new Random(DateTime.Now.Millisecond);
             //generating set of random points. Count of nodes generates randomly
-            List<Vector2> points = GraphGenerator.GenerateRandomGraph( _random.Next(10, 25));
-            Triplet<int, int, int>[] graph = GraphGenerator.ConvertPointsListToRandomGraph(points);
-            WeightedOrientedGraph realGraph = new WeightedOrientedGraph(graph.Length, graph);
-            List<int> way = realGraph.GetShortestPath(realGraph, 0, points.Count - 1).Value;
-            return VisualizedGraph.VisualizeGraph(new KeyValuePair<List<Vector2>, 
-                Triplet<int, int, int>[]>(points, graph), 5);
+            KeyValuePair<int, Triplet<int, int, int>[]> points = GraphGenerator.GenerateRandomGraph(_random.Next(10, 25));
+            //Triplet<int, int, int>[] graph = GraphGenerator.ConvertPointsListToRandomGraph(points);
+            foreach (Triplet<int, int, int> item in points.Value)
+            {
+                Console.WriteLine($"{item.Key} {item.Value} {item.Argument}");
+            }
+            WeightedOrientedGraph realGraph = new WeightedOrientedGraph(points.Key, points.Value);
+            Console.WriteLine(points.Value.Length - 1 + " " + points.Value.Length);
+            List<int> way = realGraph.GetShortestPath(realGraph, 0, realGraph.NodesCount - 1).Value;
+            return VisualizedGraph.VisualizeGraph(points.Value, 1, screenSize);
         }
 
         /*private WeightedOrientedGraph ConvertPointsSetToRandomGraph(List<Vector2> set)

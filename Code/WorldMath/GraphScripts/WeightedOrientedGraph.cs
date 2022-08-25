@@ -17,12 +17,12 @@ namespace ITCampFinalProject.Code.WorldMath.GraphScripts
         {
             NodesCount = nodesCount;
             _nodes = new Dictionary<int, HashSet<KeyValuePair<int, int>>>();
+            for (int i = 0; i < nodesCount; i++)
+            {
+                _nodes.Add(i, new HashSet<KeyValuePair<int, int>>());
+            }
             foreach (Triplet<int, int, int> connection in nodesConnection)
             {
-                if (!_nodes.ContainsKey(connection.Key))
-                    _nodes.Add(connection.Key, new HashSet<KeyValuePair<int, int>>());
-                if (!_nodes.ContainsKey(connection.Value))
-                    _nodes.Add(connection.Value, new HashSet<KeyValuePair<int, int>>());
                 EdgesCount++;
                 _nodes[connection.Key].Add(new KeyValuePair<int, int>(connection.Value, connection.Argument));
                 _nodes[connection.Value].Add(new KeyValuePair<int, int>(connection.Key, connection.Argument));
