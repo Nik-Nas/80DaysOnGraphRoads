@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Timers;
 using System.Windows.Forms;
@@ -18,37 +17,26 @@ namespace ITCampFinalProject
         private Sprite _player;
         private GraphCreatingControls _controls;
         private float _rotationSpeed = 2.0f;
-        private bool _canMoveNode = false;
+        private bool _canMoveNode;
 
         public MainForm()
         {
             _renderer = new Renderer(CreateGraphics(), Size);
             InitializeComponent();
 
-            _controls = new GraphCreatingControls(Properties.Resources.node_icon_128x128, _renderer,
+            _controls = new GraphCreatingControls(Properties.Resources.node_icon_128x128,
+                Properties.Resources.node_icon_selected_128x128, _renderer,
                 new Size(32, 32), RenderingLayer.Layer3);
+            _controls.OnNodeSelectionChangedCallback += NodeSelectionListener;
 
             _renderer.ResizeRenderingWindow(Size.Width, Size.Height);
 
             _player = new Sprite(Properties.Resources.car_icon_512x256, new Size(32, 16),
-                RenderingLayer.Layer8, 50, 50);
+                RenderingLayer.Layer8, 50, 100);
 
             _renderer.AddSpriteToRenderingStack(_player);
-            /*RoadManager roadGenerator = new RoadManager();
-            Bitmap road = roadGenerator.GetRoad(Size);
-            _renderer.AddSpriteToRenderingStack(new Sprite(road, Size, Vector2.zero, RenderingLayer.Layer2));
-            _renderer.SetScreenGraphics(CreateGraphics());
 
-            /*Bitmap visualizedGraph = VisualizedGraph.VisualizeGraph(
-                new[]
-                {
-                    new Vector2(15, 15),
-                    new Vector2(45, 30),
-                    new Vector2(30, 40)
-                }, 2f);
-            _renderer.AddSpriteToRenderingStack(new Sprite(visualizedGraph, 
-                visualizedGraph.Size, new Vector2(150, 200), 1));*/
-            Console.WriteLine(_renderer.RenderingMask);
+            addEdgeButton.Enabled = false;
             FPSTimer.Enabled = true;
             InputTimer.Enabled = false;
         }
@@ -136,7 +124,6 @@ namespace ITCampFinalProject
             }
 
             Activate();
-
         }
 
         private void MainForm_MouseDown(object sender, MouseEventArgs e)
@@ -149,18 +136,22 @@ namespace ITCampFinalProject
         {
             _canMoveNode = false;
         }
-        
+
         private void MainForm_MouseMove(object sender, MouseEventArgs e)
         {
-            if (_controls.mode == NodeSelectingMode.ForMoving && _controls.SelectedNode != null && _canMoveNode)
+            float x = AdvancedMath.Clamp(e.X, 100, Size.Width - 100);
+            float y = AdvancedMath.Clamp(e.Y, 100, Size.Height - 100);
+            
+            if (_canMoveNode && _controls.Mode == NodeSelectingMode.ForMoving && _controls.SelectedNode != null)
             {
-                _controls.SelectedNode.transform.ChangePosition(e.X, e.Y);
+                _controls.SelectedNode.transform.SetPosition(x, y);
             }
         }
+
         private void AddEdgeButton_Click(object sender, EventArgs e)
         {
             HintLabel.Text = @"Select two nodes to make an edge between them";
-            _controls.mode = NodeSelectingMode.ForCreatingEdge;
+            _controls.Mode = NodeSelectingMode.ForCreatingEdge;
             _canMoveNode = false;
             if (sender is Button b)
             {
@@ -169,16 +160,17 @@ namespace ITCampFinalProject
             }
 
             Activate();
-
         }
 
         private void SolveButton_Click(object sender, EventArgs e)
         {
-            WeightedOrientedGraph graph = _controls.Nodes.Count > 1 ? _controls.ConvertDataToGraph() : null;
-            string s = "";
-            foreach(int way in graph?.GetShortestPath(graph, 0, graph.NodesCount - 1).Value ?? new List<int>())
-                s += way + "\n";
-            
+            if (_controls.Nodes.Count > 1)
+            {
+                WeightedOrientedGraph graph = _controls.Nodes.Count > 1 ? _controls.ConvertDataToGraph() : null;
+                graph?.GetShortestPath(graph, 0, graph.NodesCount - 1);
+                ShowWay(graph?.ShortestPath);
+            }
+
             if (sender is Button b)
             {
                 b.Enabled = false;
@@ -186,9 +178,6 @@ namespace ITCampFinalProject
             }
 
             Activate();
-
-            ShowWay(graph?.ShortestPath);
-            //if (s.Length > 0) MessageBox.Show(s);
         }
 
         private void ShowWay(IReadOnlyList<int> way)
@@ -198,7 +187,17 @@ namespace ITCampFinalProject
                 Line l = new Line(_controls.Nodes[way[i - 1]], _controls.Nodes[way[i]], 5, Color.Black);
                 _renderer.primitives.Add(l);
             }
-            _player.transform.ChangePosition(_controls.Nodes[way[0]].transform.position);
+
+            if (way.Count <= 0) return;
+
+            _player.transform.SetPosition(_controls.Nodes[way[0]].transform.position);
+            _player.transform.LookAt(_controls.Nodes[way[1]].transform);
+        }
+
+        private void NodeSelectionListener(bool isSelected, MultiTextureSprite node, int index)
+        {
+            deleteNodeButton.Enabled = isSelected;
+            addEdgeButton.Enabled = !isSelected && _controls.Nodes.Count > 1;
         }
     }
 }

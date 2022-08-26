@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Code\Drawing\DrawingUtils.cs" />
     <Compile Include="Code\Drawing\Line.cs" />
+    <Compile Include="Code\Drawing\MultiTextureSprite.cs" />
     <Compile Include="Code\Drawing\Renderer.cs" />
     <Compile Include="Code\Drawing\Sprite.cs" />
     <Compile Include="Code\Drawing\VisualizedGraph.cs" />

@@ -8,17 +8,17 @@ namespace ITCampFinalProject.Code.Drawing
 {
     public class Sprite : Component
     {
-        public readonly Bitmap texture;
+        public Bitmap texture { get; protected set; }
         public Bitmap rotatedTexture;
         public Transform transform;
         public readonly RenderingLayer layer;
         
-        private void OnSizeChanged(int width, int height)
+        protected void OnSizeChanged(int width, int height)
         {
             rotatedTexture = DrawingUtils.ResizeImage(rotatedTexture, width, height);
         }
 
-        private void OnRotated(float angle)
+        protected void OnRotated(float angle)
         {
             rotatedTexture = DrawingUtils.RotateImage(texture, transform.Angle);
             transform.SetSize(rotatedTexture.Width, rotatedTexture.Height, false);

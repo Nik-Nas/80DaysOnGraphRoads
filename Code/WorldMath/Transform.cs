@@ -36,13 +36,13 @@ namespace ITCampFinalProject.Code.WorldMath
         
         private float _angle;
 
-        public void ChangePosition(Vector2 newPosition)
+        public void SetPosition(Vector2 newPosition)
         {
             position = newPosition;
             RecalculateCenteredPosition();
         }
 
-        public void ChangePosition(float x, float y)
+        public void SetPosition(float x, float y)
         {
             position.x = x;
             position.y = y;
@@ -60,10 +60,22 @@ namespace ITCampFinalProject.Code.WorldMath
         public void Rotate(float angleDelta)
         {
             Angle += angleDelta;
-            forward = new Vector2((float) Math.Cos(Angle * AdvancedMath.DEG_TO_RAD),
-                (float) Math.Sin(Angle * AdvancedMath.DEG_TO_RAD));
+            RecalculateFrowardVector();
             
             OnTransformRotatedCallback?.Invoke(Angle);
+        }
+
+        public void SetRotation(float angle)
+        {
+            Angle = angle;
+            RecalculateFrowardVector();
+            OnTransformRotatedCallback?.Invoke(angle);
+        }
+
+        public void LookAt(Transform transform)
+        {
+            Vector2 lookFrom = (position - transform.position).Normalized;
+            SetRotation(Vector2.Angle(Vector2.worldForward, lookFrom));
         }
 
         public void Scale(float scaleFactor, bool callEvent = true)
@@ -123,6 +135,12 @@ namespace ITCampFinalProject.Code.WorldMath
         {
             _centeredPosition.x = position.x - center.x;
             _centeredPosition.y = position.y - center.y;
+        }
+
+        public void RecalculateFrowardVector()
+        {
+            forward = new Vector2((float) Math.Cos(Angle * AdvancedMath.DEG_TO_RAD),
+                (float) Math.Sin(Angle * AdvancedMath.DEG_TO_RAD));
         }
     }
 }

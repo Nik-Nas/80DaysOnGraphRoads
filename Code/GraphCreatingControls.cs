@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 using ITCampFinalProject.Code.Drawing;
 using ITCampFinalProject.Code.Utils;
 using ITCampFinalProject.Code.WorldMath;
@@ -12,42 +13,63 @@ namespace ITCampFinalProject.Code
 {
     public class GraphCreatingControls
     {
-        public ReadOnlyCollection<Sprite> Nodes => _nodes.AsReadOnly();
-        public Bitmap NodeTexture;
-        public Renderer TargetRenderer { get; private set; }
-        public Size NodeSize;
-        public readonly RenderingLayer Layer;
-        public NodeSelectingMode mode;
-
-        public Sprite SelectedNode
+        public MultiTextureSprite SelectedNode
         {
             get => _selectedNode;
             set => _selectedNode = _nodes.Contains(value) ? value : null;
         }
+        public ReadOnlyCollection<MultiTextureSprite> Nodes => _nodes.AsReadOnly();
+        public ReadOnlyCollection<Triplet<int, int, int>> Edges => _edges.AsReadOnly();
+        public Bitmap NodeTexture;
+        public Bitmap SelectedNodeTexture;
+        public Renderer TargetRenderer { get; private set; }
+        public Size NodeSize;
+        public readonly RenderingLayer Layer;
+        public NodeSelectingMode Mode;
 
-        private List<Sprite> _nodes = new List<Sprite>();
-        private HashSet<Triplet<int, int, int>> _edges = new HashSet<Triplet<int, int, int>>();
-        private int[] selectingEdge = {-1, -1};
-        private Sprite _selectedNode;
+        private List<MultiTextureSprite> _nodes = new List<MultiTextureSprite>();
+        private List<Triplet<int, int, int>> _edges = new List<Triplet<int, int, int>>();
+        private List<Line> _edgesLines = new List<Line>();
+        private int[] _selectingEdge = {-1, -1};
+        private MultiTextureSprite _selectedNode;
+        
+        public delegate void OnNodeSelectionChanged(bool isSelected, MultiTextureSprite node, int index);
+
+        public OnNodeSelectionChanged OnNodeSelectionChangedCallback;
+
+
+        #region NodesOperations
 
         public void AddNode(Vector2 point)
         {
-            Sprite newNode = new Sprite(NodeTexture, NodeSize, point, Layer);
+            MultiTextureSprite newNode = new MultiTextureSprite(new List<Bitmap> {NodeTexture, SelectedNodeTexture},
+                NodeSize, point, Layer);
             _nodes.Add(newNode);
             TargetRenderer.AddSpriteToRenderingStack(newNode);
-            _selectedNode = newNode;
-        }   
+            Deselect();
+            SelectNode(newNode);
+        }
 
         public void RemoveSelectedNode()
         {
-            if (!_nodes.Remove(_selectedNode))
+            int selectedNodeIndex = _nodes.IndexOf(_selectedNode);
+
+            if (selectedNodeIndex == -1)
             {
                 Console.WriteLine(@"Can't remove node");
                 return;
             }
-
+            
             TargetRenderer.RemoveSpriteFromRenderingStack(_selectedNode);
-            _selectedNode = null;
+            for (int i = 0; i < _edges.Count; i++)
+            {
+                if (_edges[i].Key != selectedNodeIndex && _edges[i].Value != selectedNodeIndex) continue;
+                
+                _edges.Remove(_edges[i]);
+                TargetRenderer.primitives.Remove(_edgesLines[i]);
+                _edgesLines.RemoveAt(i);
+            }
+            Deselect();
         }
 
         public void RemoveNode(int index)
@@ -63,58 +85,123 @@ namespace ITCampFinalProject.Code
             }
         }
 
+        public void SelectNode(int index)
+        {
+            try
+            {
+                _selectedNode = _nodes[index];
+                _selectedNode.SetTexture(1);
+                OnNodeSelectionChangedCallback?.Invoke(true, _selectedNode, index);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(@"can't find element in _nodes[] with index " + index);
+            }
+
+        }
+
+        public void SelectNode(MultiTextureSprite node)
+        {
+            try
+            {
+                _selectedNode = node;
+                _selectedNode.SetTexture(1);
+                OnNodeSelectionChangedCallback?.Invoke(true, _selectedNode, _nodes.IndexOf(node));
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(@"Can't find argument node in _nodes list");
+            }
+        }
+
+        public void Deselect()
+        {
+            _selectedNode?.ResetTexture();
+            OnNodeSelectionChangedCallback?.Invoke(false, _selectedNode, _nodes.IndexOf(_selectedNode));
+            _selectedNode = null;
+        }
+
+        public Triplet<bool, MultiTextureSprite, int> IsClickedToNode(Vector2 clickCoords)
+        {
+            for (int i = 0; i < _nodes.Count; i++)
+            {
+                if (Vector2.Distance(_nodes[i].transform.centeredPosition, clickCoords) <=
+                    _nodes[i].transform.Size.Width << 1)
+                    return new Triplet<bool, MultiTextureSprite, int>(true, _nodes[i], i);
+            }
+
+            return new Triplet<bool, MultiTextureSprite, int>(false, null, -1);
+        }
+
+        #endregion
+
+        #region EdgesOperations
+
         public bool AddEdge(int nodeFrom, int nodeTo)
         {
             if (nodeFrom == nodeTo) return false;
 
             _edges.Add(new Triplet<int, int, int>(nodeFrom, nodeTo, (int) Vector2.Distance(
-                    _nodes[nodeFrom].transform.centeredPosition, _nodes[nodeTo].transform.centeredPosition)));
+                _nodes[nodeFrom].transform.centeredPosition, _nodes[nodeTo].transform.centeredPosition)));
             return true;
         }
 
         public WeightedOrientedGraph ConvertDataToGraph()
         {
-            /*List<Triplet<int, int, int>> connections =
-                _edges.Select(nodesPair => new Triplet<int, int, int>(nodesPair.Key, nodesPair.Value,
-                    (int) Vector2.Distance(_nodes[nodesPair.Key].transform.centeredPosition,
-                        _nodes[nodesPair.Value].transform.centeredPosition))).ToList();*/
             WeightedOrientedGraph graph = new WeightedOrientedGraph(_nodes.Count, _edges.ToArray());
             return graph;
         }
 
-        public GraphCreatingControls(Bitmap nodeTexture, Renderer targetRenderer, Size nodeSize, RenderingLayer layer)
+        public GraphCreatingControls(Bitmap nodeTexture, Bitmap selectedNodeTexture, Renderer targetRenderer,
+            Size nodeSize, RenderingLayer layer)
         {
             NodeTexture = nodeTexture;
+            SelectedNodeTexture = selectedNodeTexture;
             NodeSize = nodeSize;
             TargetRenderer = targetRenderer;
             Layer = layer;
         }
 
-        public void SelectNode(int index)
+        private bool ConnectEdges(int nodeIndex)
         {
-            _selectedNode = _nodes[index];
-        }
+            if (_selectingEdge[0] == -1)
+            {
+                _selectingEdge[0] = nodeIndex;
+                return false;
+            }
 
-        public void SelectNode(Sprite node)
-        {
-            _selectedNode = node;
-        }
+            Mode = NodeSelectingMode.ForMoving;
+            _selectingEdge[1] = nodeIndex;
+            if (!_edges.Any(edge => edge.Key == _selectingEdge[0] && edge.Value == _selectingEdge[1]))
+            {
+                _edgesLines.Add(new Line(_nodes[_selectingEdge[0]],
+                    _nodes[_selectingEdge[1]], 30, Color.Orange));
 
-        public void Deselect()
-        {
-            _selectedNode = null;
-        }
+                TargetRenderer.primitives.Add(_edgesLines[_edgesLines.Count - 1]);
 
+                _edges.Add(new Triplet<int, int, int>(_selectingEdge[0], _selectingEdge[1], (int) Vector2.Distance(
+                    _nodes[_selectingEdge[0]].transform.centeredPosition,
+                    _nodes[_selectingEdge[1]].transform.centeredPosition)));
+                _selectingEdge = new[] {-1, -1};
+                return true;
+            }
+
+            _selectingEdge = new[] {-1, -1};
+            return false;
+        }
+        
+        #endregion
+        
         public void ProcessClick(Vector2 clickCoords)
         {
-            Triplet<bool, Sprite, int> isAnyNodeClicked = IsClickedToNode(clickCoords);
+            Triplet<bool, MultiTextureSprite, int> isAnyNodeClicked = IsClickedToNode(clickCoords);
             if (!isAnyNodeClicked.Key)
             {
                 Deselect();
                 return;
             }
 
-            switch (mode)
+            switch (Mode)
             {
                 case NodeSelectingMode.ForMoving:
                     SelectNode(isAnyNodeClicked.Value);
@@ -123,39 +210,6 @@ namespace ITCampFinalProject.Code
                     ConnectEdges(isAnyNodeClicked.Argument);
                     break;
             }
-        }
-
-        public Triplet<bool, Sprite, int> IsClickedToNode(Vector2 clickCoords)
-        {
-            /*foreach (var node in _nodes.Where(node => */
-            for (int i = 0; i < _nodes.Count; i++)
-            {
-                if (Vector2.Distance(_nodes[i].transform.centeredPosition, clickCoords) <=
-                    _nodes[i].transform.Size.Width << 1)
-                    return new Triplet<bool, Sprite, int>(true, _nodes[i], i);
-            }
-
-            return new Triplet<bool, Sprite, int>(false, null, -1);
-        }
-
-        private bool ConnectEdges(int nodeIndex)
-        {
-            if (selectingEdge[0] == -1)
-            {
-                selectingEdge[0] = nodeIndex;
-                return false;
-            }
-
-            mode = NodeSelectingMode.ForMoving;
-            selectingEdge[1] = nodeIndex;
-            TargetRenderer.primitives.Add(new Line(_nodes[selectingEdge[0]],
-                _nodes[selectingEdge[1]], 30, Color.Orange));
-            
-            _edges.Add(new Triplet<int, int, int>(selectingEdge[0], selectingEdge[1], (int) Vector2.Distance(
-                _nodes[selectingEdge[0]].transform.centeredPosition, _nodes[selectingEdge[1]].transform.centeredPosition)));
-            
-            selectingEdge = new[] {-1, -1};
-            return true;
         }
     }
 

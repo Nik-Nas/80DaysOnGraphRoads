@@ -8,6 +8,8 @@ namespace ITCampFinalProject.Code.WorldMath
     {
         public static readonly Vector2 zero = new Vector2(0, 0);
         public static readonly Vector2 one = new Vector2(1, 1);
+        public static readonly Vector2 worldForward = new Vector2(1, 0);
+        public static readonly Vector2 worldUp = new Vector2(0, 1);
         public float x;
         public float y;
 
@@ -30,7 +32,7 @@ namespace ITCampFinalProject.Code.WorldMath
 
         public static float Angle(Vector2 v1, Vector2 v2)
         {
-            return (float) (Math.Acos(Dot(v1, v2 - v1)) * 180D / Math.PI);
+            return (float) (Math.Acos(Dot(v1, v2)) * 180D / Math.PI);
         }
 
         public static float Dot(Vector2 v1, Vector2 v2)

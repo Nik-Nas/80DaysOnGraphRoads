@@ -38,7 +38,6 @@ namespace ITCampFinalProject
             this.HintLabel = new System.Windows.Forms.Label();
             this.SolveButton = new System.Windows.Forms.Button();
             this.deleteNodeButton = new System.Windows.Forms.Button();
-            this.deleteEdgeButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize) (this.FPSTimer)).BeginInit();
             this.SuspendLayout();
             // 
@@ -87,7 +86,7 @@ namespace ITCampFinalProject
             // 
             this.SolveButton.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.SolveButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.SolveButton.Location = new System.Drawing.Point(414, 12);
+            this.SolveButton.Location = new System.Drawing.Point(310, 12);
             this.SolveButton.Name = "SolveButton";
             this.SolveButton.Size = new System.Drawing.Size(110, 33);
             this.SolveButton.TabIndex = 0;
@@ -108,17 +107,6 @@ namespace ITCampFinalProject
             this.deleteNodeButton.UseVisualStyleBackColor = true;
             this.deleteNodeButton.Click += new System.EventHandler(this.DeleteNodeButton_Click);
             // 
-            // deleteEdgeButton
-            // 
-            this.deleteEdgeButton.Enabled = false;
-            this.deleteEdgeButton.Location = new System.Drawing.Point(310, 12);
-            this.deleteEdgeButton.Name = "deleteEdgeButton";
-            this.deleteEdgeButton.Size = new System.Drawing.Size(98, 34);
-            this.deleteEdgeButton.TabIndex = 0;
-            this.deleteEdgeButton.TabStop = false;
-            this.deleteEdgeButton.Text = "Delete Edge";
-            this.deleteEdgeButton.UseVisualStyleBackColor = true;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -126,7 +114,6 @@ namespace ITCampFinalProject
             this.ClientSize = new System.Drawing.Size(1006, 556);
             this.Controls.Add(this.SolveButton);
             this.Controls.Add(this.HintLabel);
-            this.Controls.Add(this.deleteEdgeButton);
             this.Controls.Add(this.addEdgeButton);
             this.Controls.Add(this.deleteNodeButton);
             this.Controls.Add(this.addNodeButton);
@@ -148,7 +135,6 @@ namespace ITCampFinalProject
 
         private System.Windows.Forms.Button addNodeButton;
 
-        private System.Windows.Forms.Button deleteEdgeButton;
         private System.Windows.Forms.Button deleteNodeButton;
         private System.Windows.Forms.Button addEdgeButton;
 
