@@ -33,7 +33,6 @@ namespace ITCampFinalProject
 
             _player = new Sprite(Properties.Resources.car_icon_512x256, new Size(32, 16),
                 RenderingLayer.Layer8, 50, 100);
-
             _renderer.AddSpriteToRenderingStack(_player);
 
             addEdgeButton.Enabled = false;
@@ -65,6 +64,8 @@ namespace ITCampFinalProject
 
         private void ProcessMotion()
         {
+            float rotationMultiplier = _pressedKeys.Contains(Keys.W) ? 1f :
+                _pressedKeys.Contains(Keys.S) ? -1 : 0;
             foreach (Keys keyCode in _pressedKeys)
             {
                 switch (keyCode)
@@ -81,15 +82,15 @@ namespace ITCampFinalProject
                         break;
                     }
 
-                    case Keys.A when _pressedKeys.Contains(Keys.W) || _pressedKeys.Contains(Keys.S):
+                    case Keys.A:
                     {
-                        _player.transform.Rotate(-_rotationSpeed);
+                        _player.transform.Rotate(-_rotationSpeed * rotationMultiplier);
                         break;
                     }
 
-                    case Keys.D when _pressedKeys.Contains(Keys.W) || _pressedKeys.Contains(Keys.S):
+                    case Keys.D:
                     {
-                        _player.transform.Rotate(_rotationSpeed);
+                        _player.transform.Rotate(_rotationSpeed * rotationMultiplier);
                         break;
                     }
                 }
@@ -105,11 +106,7 @@ namespace ITCampFinalProject
         {
             _controls.AddNode(new Vector2(150f, 150f));
             HintLabel.Text = @"Place node wherever you want";
-            if (sender is Button b)
-            {
-                b.Enabled = false;
-                b.Enabled = true;
-            }
+            ResetFocus(sender);
 
             Activate();
         }
@@ -117,11 +114,7 @@ namespace ITCampFinalProject
         private void DeleteNodeButton_Click(object sender, EventArgs e)
         {
             _controls.RemoveSelectedNode();
-            if (sender is Button b)
-            {
-                b.Enabled = false;
-                b.Enabled = true;
-            }
+            ResetFocus(sender);
 
             Activate();
         }
@@ -153,11 +146,7 @@ namespace ITCampFinalProject
             HintLabel.Text = @"Select two nodes to make an edge between them";
             _controls.Mode = NodeSelectingMode.ForCreatingEdge;
             _canMoveNode = false;
-            if (sender is Button b)
-            {
-                b.Enabled = false;
-                b.Enabled = true;
-            }
+            ResetFocus(sender);
 
             Activate();
         }
@@ -171,13 +160,15 @@ namespace ITCampFinalProject
                 ShowWay(graph?.ShortestPath);
             }
 
-            if (sender is Button b)
-            {
-                b.Enabled = false;
-                b.Enabled = true;
-            }
+            ResetFocus(sender);
 
             Activate();
+        }
+
+        private void ResetButton_Click(object sender, EventArgs e)
+        {
+            _controls.Reset();
+            ResetFocus(sender);
         }
 
         private void ShowWay(IReadOnlyList<int> way)
@@ -198,6 +189,13 @@ namespace ITCampFinalProject
         {
             deleteNodeButton.Enabled = isSelected;
             addEdgeButton.Enabled = !isSelected && _controls.Nodes.Count > 1;
+        }
+
+        private void ResetFocus(object sender)
+        {
+            if (!(sender is Button b)) return;
+            b.Enabled = false;
+            b.Enabled = true;
         }
     }
 }

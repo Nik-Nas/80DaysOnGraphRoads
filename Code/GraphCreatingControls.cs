@@ -8,6 +8,7 @@ using ITCampFinalProject.Code.Drawing;
 using ITCampFinalProject.Code.Utils;
 using ITCampFinalProject.Code.WorldMath;
 using ITCampFinalProject.Code.WorldMath.GraphScripts;
+using static ITCampFinalProject.Code.Drawing.DrawingUtils;
 
 namespace ITCampFinalProject.Code
 {
@@ -42,8 +43,12 @@ namespace ITCampFinalProject.Code
 
         public void AddNode(Vector2 point)
         {
-            MultiTextureSprite newNode = new MultiTextureSprite(new List<Bitmap> {NodeTexture, SelectedNodeTexture},
-                NodeSize, point, Layer);
+            MultiTextureSprite newNode = new MultiTextureSprite(new List<Bitmap> 
+                {DrawTextOnTexture(NodeTexture, _nodes.Count + 1,
+                    TextAlignment.CenterMiddle, Color.White), 
+                    DrawTextOnTexture(SelectedNodeTexture, _nodes.Count + 1,
+                    TextAlignment.CenterMiddle, Color.White)}, NodeSize, point, Layer);
+
             _nodes.Add(newNode);
             TargetRenderer.AddSpriteToRenderingStack(newNode);
             Deselect();
@@ -64,10 +69,10 @@ namespace ITCampFinalProject.Code
             for (int i = 0; i < _edges.Count; i++)
             {
                 if (_edges[i].Key != selectedNodeIndex && _edges[i].Value != selectedNodeIndex) continue;
-                
                 _edges.Remove(_edges[i]);
                 TargetRenderer.primitives.Remove(_edgesLines[i]);
                 _edgesLines.RemoveAt(i);
+                i--;
             }
             Deselect();
         }
@@ -126,7 +131,7 @@ namespace ITCampFinalProject.Code
             for (int i = 0; i < _nodes.Count; i++)
             {
                 if (Vector2.Distance(_nodes[i].transform.centeredPosition, clickCoords) <=
-                    _nodes[i].transform.Size.Width << 1)
+                    _nodes[i].transform.Size.Width)
                     return new Triplet<bool, MultiTextureSprite, int>(true, _nodes[i], i);
             }
 
@@ -210,6 +215,21 @@ namespace ITCampFinalProject.Code
                     ConnectEdges(isAnyNodeClicked.Argument);
                     break;
             }
+        }
+
+        public void Reset()
+        {
+            _nodes = null;
+            _nodes = new List<MultiTextureSprite>();
+            _edges = null;
+            _edges = new List<Triplet<int, int, int>>();
+            TargetRenderer.ClearLayerInRenderingStack(Layer);
+            TargetRenderer.primitives = null;
+            TargetRenderer.primitives = new List<Line>();
+            _selectedNode = null;
+            _edgesLines = null;
+            _edgesLines = new List<Line>();
+            OnNodeSelectionChangedCallback?.Invoke(false, _selectedNode, _nodes.IndexOf(_selectedNode));
         }
     }
 

@@ -38,6 +38,7 @@ namespace ITCampFinalProject
             this.HintLabel = new System.Windows.Forms.Label();
             this.SolveButton = new System.Windows.Forms.Button();
             this.deleteNodeButton = new System.Windows.Forms.Button();
+            this.ResetButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize) (this.FPSTimer)).BeginInit();
             this.SuspendLayout();
             // 
@@ -107,11 +108,25 @@ namespace ITCampFinalProject
             this.deleteNodeButton.UseVisualStyleBackColor = true;
             this.deleteNodeButton.Click += new System.EventHandler(this.DeleteNodeButton_Click);
             // 
+            // ResetButton
+            // 
+            this.ResetButton.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.ResetButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.ResetButton.Location = new System.Drawing.Point(426, 12);
+            this.ResetButton.Name = "ResetButton";
+            this.ResetButton.Size = new System.Drawing.Size(78, 33);
+            this.ResetButton.TabIndex = 0;
+            this.ResetButton.TabStop = false;
+            this.ResetButton.Text = "Reset";
+            this.ResetButton.UseVisualStyleBackColor = false;
+            this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1006, 556);
+            this.Controls.Add(this.ResetButton);
             this.Controls.Add(this.SolveButton);
             this.Controls.Add(this.HintLabel);
             this.Controls.Add(this.addEdgeButton);
@@ -128,6 +143,8 @@ namespace ITCampFinalProject
             ((System.ComponentModel.ISupportInitialize) (this.FPSTimer)).EndInit();
             this.ResumeLayout(false);
         }
+
+        private System.Windows.Forms.Button ResetButton;
 
         private System.Windows.Forms.Button SolveButton;
 

@@ -6,14 +6,15 @@ namespace ITCampFinalProject.Code.WorldMath
     public static class AdvancedMath
     {
         public const float FLOAT_EQUALITY_EDGE = 10E-5f;
-        public static readonly double DEG_TO_RAD = Math.PI / 180D; 
+        public const double DEG_TO_RAD = 0.01745329251994329576923690768489D; 
+        public const double RAD_TO_DEG = 57.295779513082320876798154814105D; 
         
-        public static float Clamp(float value, float min, float max)
-        {
-            if (value > max) value = max;
-            if (value < min) value = min;
-            return value;
-        }
+            public static float Clamp(float value, float min, float max)
+            {
+                if (value > max) value = max;
+                if (value < min) value = min;
+                return value;
+            }
 
         public static float CircularClamp(float value, float min, float max)
         {

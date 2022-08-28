@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+
 //ReSharper disable InconsistentNaming 
 
 namespace ITCampFinalProject.Code.WorldMath
@@ -22,7 +23,7 @@ namespace ITCampFinalProject.Code.WorldMath
 
         public OnTransformSizeChanged OnTransformSizeChangedCallback;
         public OnTransformRotated OnTransformRotatedCallback;
-        
+
         #endregion
 
 
@@ -31,9 +32,9 @@ namespace ITCampFinalProject.Code.WorldMath
             get => _angle;
             private set => _angle = AdvancedMath.CircularClamp(value, 0f, 359.999f);
         }
-        
+
         public Vector2 forward { get; private set; }
-        
+
         private float _angle;
 
         public void SetPosition(Vector2 newPosition)
@@ -52,16 +53,19 @@ namespace ITCampFinalProject.Code.WorldMath
 
         public void MoveInDirection(Vector2 direction)
         {
+            if (direction == Vector2.zero) return;
             position += direction;
-            
+
             RecalculateCenteredPosition();
         }
 
         public void Rotate(float angleDelta)
         {
+            if (angleDelta == 0) return;
+
             Angle += angleDelta;
             RecalculateFrowardVector();
-            
+
             OnTransformRotatedCallback?.Invoke(Angle);
         }
 
@@ -75,7 +79,7 @@ namespace ITCampFinalProject.Code.WorldMath
         public void LookAt(Transform transform)
         {
             Vector2 lookFrom = (position - transform.position).Normalized;
-            SetRotation(Vector2.Angle(Vector2.worldForward, lookFrom));
+            SetRotation(Vector2.Angle(lookFrom, Vector2.worldForward));
         }
 
         public void Scale(float scaleFactor, bool callEvent = true)
@@ -83,13 +87,13 @@ namespace ITCampFinalProject.Code.WorldMath
             //changing scale
             _size.Height = (int) (_size.Height * scaleFactor);
             _size.Width = (int) (_size.Width * scaleFactor);
-            
+
             //recalculating center of transform
             center = new Vector2(_size.Width >> 1, _size.Height >> 1);
-            
+
             //recalculating centeredPosition
             RecalculateCenteredPosition();
-            
+
             //if needed, calling event
             if (callEvent) OnTransformSizeChangedCallback?.Invoke(_size.Width, _size.Width);
         }
@@ -99,12 +103,12 @@ namespace ITCampFinalProject.Code.WorldMath
             //changing size of transform
             _size.Height = height;
             _size.Width = width;
-            
+
             //recalculating center of transform
             center = new Vector2(_size.Width >> 1, _size.Height >> 1);
-            
+
             RecalculateCenteredPosition();
-            
+
             //if needed, calling event
             if (callEvent) OnTransformSizeChangedCallback?.Invoke(_size.Width, _size.Width);
         }

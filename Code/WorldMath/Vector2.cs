@@ -32,7 +32,7 @@ namespace ITCampFinalProject.Code.WorldMath
 
         public static float Angle(Vector2 v1, Vector2 v2)
         {
-            return (float) (Math.Acos(Dot(v1, v2)) * 180D / Math.PI);
+            return (float) (Math.Acos(Dot(v1, v2)) * AdvancedMath.RAD_TO_DEG);
         }
 
         public static float Dot(Vector2 v1, Vector2 v2)

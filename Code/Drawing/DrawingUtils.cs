@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using ITCampFinalProject.Code.WorldMath;
 
 namespace ITCampFinalProject.Code.Drawing
 {
     public static class DrawingUtils
     {
-        private static float sin;
-        private static float cos;
-        private static Bitmap rotatedBitmap;
         /// <summary>
         /// Rotates image by given angle and resizing bitmap to avoid clipping
         /// </summary>
@@ -23,14 +18,14 @@ namespace ITCampFinalProject.Code.Drawing
             if (image == null)
                 throw new ArgumentNullException(nameof(image));
 
-            sin = (float) Math.Abs(Math.Sin(angle * Math.PI / 180D));
-            cos = (float) Math.Abs(Math.Cos(angle * Math.PI / 180D));
+            float sin = (float) Math.Abs(Math.Sin(angle * Math.PI / 180D));
+            float cos = (float) Math.Abs(Math.Cos(angle * Math.PI / 180D));
             //create a new empty bitmap to hold rotated image
-            rotatedBitmap = new Bitmap((int) Math.Round(image.Width * cos + image.Height * sin), 
+            Bitmap rotatedBitmap = new Bitmap((int) Math.Round(image.Width * cos + image.Height * sin),
                 (int) Math.Round(image.Width * sin + image.Height * cos));
             //make a graphics object from the empty bitmap
             Graphics g = Graphics.FromImage(rotatedBitmap);
-            
+
             //Put the rotation point in the center of the image
             g.TranslateTransform(rotatedBitmap.Width >> 1, rotatedBitmap.Height >> 1);
 
@@ -42,7 +37,7 @@ namespace ITCampFinalProject.Code.Drawing
             g.Dispose();
             return rotatedBitmap;
         }
-        
+
         /// <summary>
         /// Resize the image to the specified width and height.
         /// </summary>
@@ -74,5 +69,75 @@ namespace ITCampFinalProject.Code.Drawing
 
             return destImage;
         }
+
+        public static Bitmap DrawTextOnTexture(Bitmap sourceTexture, object textToDraw, TextAlignment alignment, Color color,
+            int size = 50, int topPadding = 10, int leftPadding = 10, int rightPadding = 10, int bottomPadding = 10)
+        {
+            Bitmap result = new Bitmap(sourceTexture);
+            Graphics graphics = Graphics.FromImage(result);
+            float x = 0;
+            float y = 0;
+            Font font = new Font(FontFamily.GenericSansSerif, size);
+            switch (alignment)
+            {
+                case TextAlignment.LeftMiddle:
+                    x = leftPadding;
+                    y = (sourceTexture.Height >> 1) + topPadding - bottomPadding;
+                    break;
+                case TextAlignment.LeftTop:
+                    x = leftPadding;
+                    y = topPadding;
+                    break;
+                case TextAlignment.LeftBottom:
+                    x = leftPadding;
+                    y = sourceTexture.Height - bottomPadding;
+                    break;
+                case TextAlignment.CenterMiddle:
+                    x = (sourceTexture.Width >> 1) + leftPadding - rightPadding;
+                    y = (sourceTexture.Height >> 1) + topPadding - bottomPadding;
+                    break;
+                case TextAlignment.CenterTop:
+                    x = (sourceTexture.Width >> 1) + leftPadding - rightPadding;
+                    y = topPadding;
+                    break;
+                case TextAlignment.CenterBottom:
+                    x = (sourceTexture.Width >> 1) + leftPadding - rightPadding;
+                    y = (sourceTexture.Height >> 1) - bottomPadding;
+                    break;
+                case TextAlignment.RightMiddle:
+                    x = (sourceTexture.Width >> 1) - rightPadding;
+                    y = (sourceTexture.Height >> 1) + topPadding - bottomPadding;
+                    break;
+                case TextAlignment.RightTop:
+                    x = (sourceTexture.Width >> 1) - rightPadding;
+                    y = topPadding;
+                    break;
+                case TextAlignment.RightBottom:
+                    x = (sourceTexture.Width >> 1) - rightPadding;
+                    y = (sourceTexture.Height >> 1) - bottomPadding;
+                    break;
+            }
+            StringFormat stringFormat = new StringFormat();
+            stringFormat.Alignment = StringAlignment.Center;
+            stringFormat.LineAlignment = StringAlignment.Center;
+
+            graphics.DrawString(textToDraw.ToString(), font, new SolidBrush(color),
+                x, y, stringFormat);
+            stringFormat.Dispose();
+            graphics.Dispose();
+            return result;
+        }
+    }
+    public enum TextAlignment
+    {
+        LeftMiddle,
+        LeftTop,
+        LeftBottom,
+        CenterMiddle,
+        CenterTop,
+        CenterBottom,
+        RightMiddle,
+        RightTop,
+        RightBottom
     }
 }

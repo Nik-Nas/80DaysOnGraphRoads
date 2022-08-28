@@ -58,3 +58,13 @@ C:\Users\Студент.ENGELS1-423-08.000\Source\Repos\80DaysOnGraphRoads\obj\D
 C:\Users\Студент.ENGELS1-423-08.000\Source\Repos\80DaysOnGraphRoads\obj\Debug\ITCampFinalProject.csproj.CoreCompileInputs.cache
 C:\Users\Студент.ENGELS1-423-08.000\Source\Repos\80DaysOnGraphRoads\obj\Debug\ITCampFinalProject.exe
 C:\Users\Студент.ENGELS1-423-08.000\Source\Repos\80DaysOnGraphRoads\obj\Debug\ITCampFinalProject.pdb
+C:\Users\userArt\RiderProjects\Windows\bin\Debug\ITCampFinalProject.exe.config
+C:\Users\userArt\RiderProjects\Windows\bin\Debug\ITCampFinalProject.exe
+C:\Users\userArt\RiderProjects\Windows\bin\Debug\ITCampFinalProject.pdb
+C:\Users\userArt\RiderProjects\Windows\obj\Debug\ITCampFinalProject.csproj.AssemblyReference.cache
+C:\Users\userArt\RiderProjects\Windows\obj\Debug\ITCampFinalProject.MainForm.resources
+C:\Users\userArt\RiderProjects\Windows\obj\Debug\ITCampFinalProject.Properties.Resources.resources
+C:\Users\userArt\RiderProjects\Windows\obj\Debug\ITCampFinalProject.csproj.GenerateResource.cache
+C:\Users\userArt\RiderProjects\Windows\obj\Debug\ITCampFinalProject.csproj.CoreCompileInputs.cache
+C:\Users\userArt\RiderProjects\Windows\obj\Debug\ITCampFinalProject.exe
+C:\Users\userArt\RiderProjects\Windows\obj\Debug\ITCampFinalProject.pdb

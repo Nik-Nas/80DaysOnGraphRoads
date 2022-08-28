@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
-using ITCampFinalProject.Code.WorldMath;
 
 namespace ITCampFinalProject.Code.Drawing
 {
@@ -69,6 +68,16 @@ namespace ITCampFinalProject.Code.Drawing
             if (!_renderingStack[sprite.layer].Remove(sprite)) return false;
             if (_renderingStack[sprite.layer].Count == 0) DisableLayer(sprite.layer);
             return true;
+        }
+
+        public void ClearRenderingStack()
+        {
+            _renderingStack.Clear();
+        }
+
+        public void ClearLayerInRenderingStack(RenderingLayer layer)
+        {
+            _renderingStack[layer].Clear();
         }
 
         public void EnableLayer(RenderingLayer layer)
